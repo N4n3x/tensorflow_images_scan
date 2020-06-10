@@ -4,9 +4,11 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
-var Movie = require('./models/movieModel');
 
-mongoose.connect('mongodb://cesi:cesidevops2019@194.9.172.68:27017/video?authSource=admin', {
+// const tf = require('@tensorflow/tfjs-node');
+// const tf = require('@tensorflow/tfjs-node-gpu');
+
+mongoose.connect('mongodb://cesi:cesidevops2019@194.9.172.68:27017/projet2?authSource=admin', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });
@@ -29,7 +31,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static('public'));
 
 var mainRoutes = require('./routes/main');
 app.use(mainRoutes);
