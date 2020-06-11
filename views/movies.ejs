@@ -131,7 +131,6 @@
   let nextUri = "&keyword=";
 
   button.addEventListener('change', (e)=>{
-    console.log(e.target.checked);
     sortVal = e.target.checked ? "desc" : "asc";
     keyword = keywordInput.value;
     uri = uri + sortVal + nextUri + keyword;
@@ -140,7 +139,6 @@
 
   keywordButton.addEventListener('click', (e)=>{
     e.preventDefault()
-    console.log(e);
     sortVal = button.checked ? "desc" : "asc";
     keyword = keywordInput.value;
     uri = (uri.split("page=")[1] === "") ? uri + sortVal + nextUri + keyword : uri.split("page=")[0] + 'page=1&sort=' + sortVal + nextUri + keyword;

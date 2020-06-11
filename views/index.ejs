@@ -3,16 +3,14 @@
 
 <head>
   <title>Projet 2</title>
-  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="/public/stylesheets/style.css" />
   <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"></script>
-  <!-- Load TensorFlow.js. This is required to use MobileNet. -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 </head>
 
 <body>
   <nav class="navbar">
-
     <span class="navbar-brand mb-0 h1 align-middle">
       <img src="https://js.tensorflow.org/images/lockup.svg" alt="" width="170">
       <span class="badge badge-info">TP CESI</span>
@@ -21,122 +19,47 @@
     </p>
   </nav>
   <div class="row">
-    <div class="card col-sm-9 col-xs-12">
+    <div class="card col-sm-8 col-xs-12">
       <div class="card-body">
         <h5 class="card-title">Importer votre image</h5>
-  
-        <input type="file" id="fileUpload" accept="image/*" multiple="false" />
-      </div>
-      <div class="card-footer">
-        <canvas id="overlay" style="max-width: 1000px;"></canvas>
+        <div class="row"><input type="file" id="fileUpload" accept="image/*" multiple="false" /></div>
+        <div class="row"><canvas id="overlay" style="max-width: 1000px;"></canvas></div>
         
       </div>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-4">
       <table class="table">
         <thead>
           <th scope="col">Image</th>
-          <th scope="col">Type</th>
-          <th scope="col">%</th>
+          <th style="text-align:center;:30%" scope="col">Type</th>
+          <th style="width:20%" scope="col">%</th>
         </thead>
         <tbody id="prediction">
-
+          <% data.forEach((d) => { %>
+            <tr>
+              <td><%= d.imageName %></td>
+              <td>
+                <ol>
+                  <% d.detections.forEach((dd) => { %>
+                    <li><%= dd.class %></li>
+                  <% }) %>
+                </ol>
+              </td>
+              <td>
+                <ul>
+                  <% d.detections.forEach((dd) => { %>
+                    <li><%= Math.floor(dd.score*100) %> %</li>
+                  <% }) %>
+                  </ul>
+              </td>
+            </tr>
+          <% }) %>
         </tbody>
       </table>
     </div>
+    <img id="loading" src="/public/img/loading.gif" alt="Loading">
   </div>
-  
-
-
-
+  <script src="/public/javascript/detection.js"></script>
   <!-- Place your code in the script tag below. You can also use an external .js file -->
-  <script>
-
-
-    const cocossd = () => {
-      let imgName = document.getElementById("fileUpload").value.split("\\");
-      imgName = imgName[imgName.length - 1];
-      let detail = document.getElementById("prediction");
-      detail.innerHTML = ""
-      document.getElementsByTagName("BODY")[0].style.opacity = "0.3";
-      const img = document.getElementById('overlay');
-      // Load the model.
-      cocoSsd
-        .load()
-        .then(model => {
-          model
-            .detect(img)
-            .then(predictions => {
-              console.log('Predictions (cocossd): ', predictions);
-
-              let overlay = document.getElementById("overlay");
-              let ctext = overlay.getContext('2d', { alpha: true });
-              predictions.forEach((pred) => {
-                const xPosBox = pred.bbox[0]
-                const yPosBox = pred.bbox[1]
-                const widthBox = pred.bbox[2]
-                const heightBox = pred.bbox[3]
-                ctext.beginPath();
-                ctext.rect(
-                  xPosBox,/* x */
-                  yPosBox,/* y */
-                  widthBox,/* width */
-                  heightBox/* height */
-                );
-                ctext.stroke();
-                ctext.font = "15px Arial";
-                ctext.fillStyle = "orange";
-                // fillRect(x, y, width, height);
-                // ctx.measureText(txt).width
-                //ctext.fillRect(xPosBox, yPosBox + heightBox - 18, (ctext.measureText(pred.class).width + ctext.measureText(Math.floor(pred.score).toString()).width), 18);
-                ctext.fillRect(xPosBox, yPosBox + heightBox - 18, (ctext.measureText(pred.class).width + ctext.measureText(`: ${Math.floor(pred.score)}%%`).width), 18);
-                ctext.fillStyle = "black";
-                ctext.fillText(`${pred.class}: ${Math.floor(pred.score * 100)}%`, xPosBox + 5, yPosBox + heightBox - 5);
-                console.log(ctext)
-                // ctext.textBaseline = 'bottom';
-                let newRow = detail.insertRow();
-                let newCellName = newRow.insertCell();
-                newCellName.innerHTML = imgName;
-                let newCellClass = newRow.insertCell();
-                newCellClass.innerHTML = pred.class;
-                let newCellScore = newRow.insertCell();
-                newCellScore.innerHTML = Math.floor(pred.score * 100) + "%";
-                // detail.innerHTML += `<tr><td>${pred.class}</td><td>${Math.floor(pred.score * 100)}%</td></tr>`;
-              });
-
-              document.getElementsByTagName("BODY")[0].style.opacity = "1";
-            })
-            ;
-        })
-        ;
-
-    };
-
-    document.getElementById("fileUpload").onchange = () => {
-      const input = document.getElementById("fileUpload");
-      if (input.files && input.files[0]) {
-        const ctx = document.getElementById('overlay').getContext('2d');
-
-        const img = new Image();
-        img.onload = (e) => {
-          ctx.canvas.width = img.width;
-          ctx.canvas.height = img.height;
-          ctx.lineWidth = '3';
-          ctx.strokeStyle = 'rgba(255, 165, 0, 1)';
-          // ctx.moveTo(0, 0);
-          ctx.drawImage(img, 0, 0);
-        }
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          img.src = e.target.result;
-        }
-
-        reader.readAsDataURL(input.files[0]);
-        cocossd();
-      }
-    }
-  </script>
 </body>
-
 </html>
