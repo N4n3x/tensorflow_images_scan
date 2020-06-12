@@ -9,7 +9,9 @@ const cocossd = () => {
 
     // Load the model.
     cocoSsd
-        .load()
+        .load(config = {
+            base: 'mobilenet_v2'
+        })
         .then(model => {
             model
                 .detect(img)
