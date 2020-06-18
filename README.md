@@ -1,4 +1,4 @@
-# mongodb_projet2
+# TensorFlow images scan
 
 ## Membres
 * Christophe COUERBE
@@ -9,6 +9,6 @@
 
 ## Utilisation
 * Cloner le dépôt
-* Aller dans le répertoire **mongodb_projet2** et faire ```npm install```
+* Aller dans le répertoire et faire ```npm install```
 * Faire ```npm start``` pour démarrer le serveur
 * Se rendre sur ```http://localhost:3000/```
